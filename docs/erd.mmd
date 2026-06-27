@@ -1,0 +1,177 @@
+erDiagram
+    Roles {
+        int RoleId PK
+        nvarchar Name
+    }
+
+    Users {
+        int UserId PK
+        int RoleId FK
+        nvarchar Email
+        nvarchar FullName
+        bit IsActive
+        bit MustChangePassword
+        datetime2 CreatedAt
+    }
+
+    Equipment {
+        int EquipmentId PK
+        nvarchar Name
+        nvarchar Description
+        int Quantity
+        nvarchar Category
+        bit IsActive
+        datetime2 CreatedAt
+    }
+
+    TimeSlots {
+        int TimeSlotId PK
+        time StartTime
+        time EndTime
+        bit IsActive
+    }
+
+    Reservations {
+        int ReservationId PK
+        int UserId FK
+        int EquipmentId FK
+        int TimeSlotId FK
+        int WorkoutSessionId FK
+        int WorkoutPlanItemId FK
+        date ReservationDate
+        nvarchar Status
+        datetime2 CreatedAt
+        datetime2 CancelledAt
+    }
+
+    ReservationTimeSlots {
+        int ReservationId PK, FK
+        int TimeSlotId PK, FK
+    }
+
+    WorkoutSessions {
+        int WorkoutSessionId PK
+        int UserId FK
+        int WorkoutPlanId FK
+        date SessionDate
+        time StartTime
+        time EndTime
+        nvarchar Status
+        datetime2 CreatedAt
+    }
+
+    WorkoutPlans {
+        int WorkoutPlanId PK
+        int UserId FK
+        nvarchar Name
+        nvarchar Description
+        nvarchar Goal
+        nvarchar DifficultyLevel
+        int EstimatedDurationSeconds
+        bit IsActive
+        bit IsTemplate
+        bit IsSystemGenerated
+        datetime2 CreatedAt
+        datetime2 UpdatedAt
+    }
+
+    WorkoutPlanItems {
+        int WorkoutPlanItemId PK
+        int WorkoutPlanId FK
+        int ExerciseId FK
+        int EquipmentId FK
+        nvarchar ExerciseName
+        int OrderNumber
+        int Sets
+        int Repetitions
+        int DurationSeconds
+        int RestSeconds
+        int SeriesDurationSeconds
+        nvarchar ExerciseType
+        nvarchar TimerMode
+        bit AutoAdvance
+        bit IsActive
+    }
+
+    Exercises {
+        int ExerciseId PK
+        nvarchar Name
+        nvarchar Description
+        nvarchar ExerciseType
+        nvarchar TimerMode
+        int DefaultSets
+        int DefaultRepetitions
+        int DefaultDurationSeconds
+        int DefaultRestSeconds
+        int DefaultSeriesDurationSeconds
+        nvarchar DifficultyLevel
+        bit IsActive
+    }
+
+    Muscles {
+        int MuscleId PK
+        nvarchar Name
+        nvarchar MuscleGroup
+        nvarchar LatinName
+        nvarchar BodyPart
+        bit IsActive
+    }
+
+    EquipmentMuscles {
+        int EquipmentId PK, FK
+        int MuscleId PK, FK
+        nvarchar Role
+        tinyint ActivationLevel
+        nvarchar Notes
+    }
+
+    ExerciseMuscles {
+        int ExerciseId PK, FK
+        int MuscleId PK, FK
+        nvarchar Role PK
+        tinyint ActivationLevel
+        nvarchar Notes
+    }
+
+    EquipmentExercises {
+        int EquipmentId PK, FK
+        int ExerciseId PK, FK
+        bit IsDefault
+        nvarchar Notes
+        datetime2 CreatedAt
+    }
+
+    EquipmentAlternatives {
+        int EquipmentId PK, FK
+        int AlternativeEquipmentId PK, FK
+    }
+
+    Roles ||--o{ Users : "ma użytkowników"
+    Users ||--o{ Reservations : "tworzy"
+    Users ||--o{ WorkoutPlans : "posiada"
+    Users ||--o{ WorkoutSessions : "realizuje"
+
+    Equipment ||--o{ Reservations : "jest rezerwowany"
+    Equipment ||--o{ WorkoutPlanItems : "używany w pozycji planu"
+    Equipment ||--o{ EquipmentMuscles : "angażuje"
+    Muscles ||--o{ EquipmentMuscles : "opisuje sprzęt"
+
+    Equipment ||--o{ EquipmentExercises : "obsługuje"
+    Exercises ||--o{ EquipmentExercises : "wykonywane na"
+
+    Equipment ||--o{ EquipmentAlternatives : "sprzęt bazowy"
+    Equipment ||--o{ EquipmentAlternatives : "sprzęt alternatywny"
+
+    Exercises ||--o{ ExerciseMuscles : "angażuje"
+    Muscles ||--o{ ExerciseMuscles : "opisuje ćwiczenie"
+
+    WorkoutPlans ||--o{ WorkoutPlanItems : "zawiera"
+    Exercises ||--o{ WorkoutPlanItems : "definiuje ćwiczenie"
+    WorkoutPlans ||--o{ WorkoutSessions : "jest podstawą"
+
+    WorkoutSessions ||--o{ Reservations : "tworzy rezerwacje"
+    WorkoutPlanItems ||--o{ Reservations : "rezerwuje pozycję"
+
+    TimeSlots ||--o{ Reservations : "slot główny"
+    Reservations ||--o{ ReservationTimeSlots : "obejmuje"
+    TimeSlots ||--o{ ReservationTimeSlots : "należy do"

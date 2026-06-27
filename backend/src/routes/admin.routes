@@ -1,0 +1,43 @@
+const express = require('express');
+const adminController = require('../controllers/admin.controller');
+const { authenticate, requireRole } = require('../middleware/auth');
+const { asyncHandler } = require('../middleware/asyncHandler');
+
+const router = express.Router();
+
+router.get(
+  '/users',
+  authenticate,
+  requireRole('admin'),
+  asyncHandler(adminController.listUsers)
+);
+
+router.post(
+  '/users',
+  authenticate,
+  requireRole('admin'),
+  asyncHandler(adminController.createUser)
+);
+
+router.patch(
+  '/users/:id/deactivate',
+  authenticate,
+  requireRole('admin'),
+  asyncHandler(adminController.deactivateUser)
+);
+
+router.get(
+  '/muscles',
+  authenticate,
+  requireRole('admin'),
+  asyncHandler(adminController.listMuscles)
+);
+
+router.post(
+  '/equipment/full',
+  authenticate,
+  requireRole('admin'),
+  asyncHandler(adminController.createFullEquipment)
+);
+
+module.exports = router;
